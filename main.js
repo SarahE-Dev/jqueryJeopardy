@@ -1,15 +1,94 @@
-// let containerHTML = $(`<div class="container text-center" id="grid"></div>`)
 
-// $('body').append(containerHTML)
+let gameBoard = $('#gameBoard');
+gameBoard.addClass('rounded-4')
 
-// for(let i=1; i < 6; i++){
-//     $('#grid').append(`<div class="row" id="row${i}">th</div>`)
-// }
 
-console.log('hello');
+for(let i=1; i < 6; i++){
+  let row = $('<div>')  
+  row.addClass('row');
+  row.attr('id', `row${i}`)
+  for(let j=1; j < 6; j++){
+    let question = $('<div>')
+    question.addClass('col')
+    question.attr('id', `col${j}`)
+    row.append(question)
+  }
+  gameBoard.append(row)
+}
+$('#row1 .col').text('$100')
+$('#row2 .col').text('$200')
+$('#row3 .col').text('$400')
+$('#row4 .col').text('$600')
+$('#row5 .col').text('$800')
 
-// for(let i=1; i < 6; i++){
-//     for(let j=0; j <6; i++){
-//     $(`#row${i}`).append(`<div class="col-3" id="col${j}">Col ${j}</div>`)
-//     }
-// }
+let header = $('<h1>');
+header.addClass('header')
+header.text('Jeopardy');
+$('.container').prepend(header)
+
+let actualQuestion;
+let pointsEarned;
+let totalScore = 0;
+
+if('total' in localStorage){
+  $('#score').text(localStorage.getItem('total'))
+}else{
+  $('#score').text(0)
+}
+
+
+$('.col').on('click', (event)=>{
+  $(event.target).addClass('active');
+  fetch('jeopardy.json')
+    .then(data=>data.json())
+    .then(resp=>{
+      let answer$ = $(event.target).text()
+      console.log(answer$)
+      let answerArr = resp.filter((item)=>{
+        if(item['value'] === answer$){
+          return item
+        }
+      })
+      console.log(answerArr);
+      let questionsLength = answerArr.length;
+      let questionPick = Math.floor(Math.random() * questionsLength) + 1;
+      actualQuestion = answerArr[questionPick]
+      console.log(actualQuestion);
+      $('#question').text('')
+      $('#question').append(actualQuestion.question)
+      });
+      $(event.target).css('background-color', 'blue')
+      $(event.target).css('color', 'red')
+      $('#submit-answer').on('click', ()=>{
+        let answerToQuestion = $('#answer').val();
+        let pointsYouHave = $('#score').text()
+        if(answerToQuestion === actualQuestion.answer){
+          pointsEarned = actualQuestion.value;
+          pointsEarned = pointsEarned.slice(1);
+          totalScore = parseInt(pointsYouHave) + parseInt(pointsEarned);
+          
+          console.log(totalScore);
+          console.log(pointsEarned);
+          console.log(pointsYouHave);
+          $('#answer').val('');
+          }
+        localStorage.setItem('total', totalScore)
+        $('#score').text(localStorage.getItem('total'));
+      })
+      
+      
+    })
+
+    $('#clear-score').on('click', ()=>{
+      localStorage.setItem('total', 0)
+      $('#score').text(localStorage.getItem('total'))
+    })
+
+  
+
+    
+
+
+
+
+
