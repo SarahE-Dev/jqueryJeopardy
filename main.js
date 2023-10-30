@@ -80,15 +80,18 @@ $('#clear-score').on('click', ()=>{
 
 $('#submit-answer').on('click', (e)=>{
     let answerToQuestion = $('#answer').val();
-    if(actualQuestion.answer.toLowerCase() == answerToQuestion.toLowerCase()){
+    let correctAns = actualQuestion.answer.toLowerCase();
+    console.log(correctAns);
+    if(correctAns.includes(answerToQuestion.toLowerCase()) && answerToQuestion !== ''){
         pointsYouHave = $('#score').text()
         pointsEarned = actualQuestion.value;
         pointsEarned = pointsEarned.slice(1);
         totalScore = parseInt(pointsYouHave) + parseInt(pointsEarned);
         $('#answer').val('');
-        $('#question').text('Your answer is correct!')
+        $('#question').text('That is correct! Please pick a new square.')
     }else{
-      $('#question').text('That is not correct, please pick a new square.')
+      $('#question').text(`The correct answer is: ${actualQuestion.answer}.
+       Please pick a new square.`)
     }
     
     localStorage.setItem('total', totalScore)
