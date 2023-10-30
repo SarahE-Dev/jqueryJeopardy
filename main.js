@@ -2,7 +2,7 @@
 let gameBoard = $('#gameBoard');
 gameBoard.addClass('rounded-4')
 
-
+let count = 0;
 for(let i=1; i < 6; i++){
   let row = $('<div>')  
   row.addClass('row');
@@ -10,7 +10,7 @@ for(let i=1; i < 6; i++){
   for(let j=1; j < 6; j++){
     let question = $('<div>')
     question.addClass('col')
-    question.attr('id', `col${j}`)
+    question.attr('id', `square${count++}`)
     row.append(question)
   }
   gameBoard.append(row)
@@ -30,15 +30,28 @@ let actualQuestion;
 let pointsEarned;
 let totalScore = 0;
 
+function setItems(){
 if('total' in localStorage){
   $('#score').text(localStorage.getItem('total'))
 }else{
   $('#score').text(0)
 }
 
+for(let i=0; i<=24; i++){
+  if(`square${i}` in localStorage){
+    $(`#square${i}`).addClass('active')
+  }else{
+    $(`#square${i}`).removeClass('active')
+  }
+}
+}
+setItems()
+
 
 $('.col').on('click', (event)=>{
   $(event.target).addClass('active');
+  console.log(event.target.id);
+  localStorage.setItem(event.target.id, true)
   fetch('jeopardy.json')
     .then(data=>data.json())
     .then(resp=>{
@@ -57,12 +70,10 @@ $('.col').on('click', (event)=>{
       $('#question').text('')
       $('#question').append(actualQuestion.question)
       });
-      $(event.target).css('background-color', 'blue')
-      $(event.target).css('color', 'red')
       $('#submit-answer').on('click', ()=>{
         let answerToQuestion = $('#answer').val();
         let pointsYouHave = $('#score').text()
-        if(answerToQuestion === actualQuestion.answer){
+        if(answerToQuestion == actualQuestion.answer){
           pointsEarned = actualQuestion.value;
           pointsEarned = pointsEarned.slice(1);
           totalScore = parseInt(pointsYouHave) + parseInt(pointsEarned);
@@ -71,6 +82,7 @@ $('.col').on('click', (event)=>{
           console.log(pointsEarned);
           console.log(pointsYouHave);
           $('#answer').val('');
+          $('#question').text('Your answer is correct!')
           }
         localStorage.setItem('total', totalScore)
         $('#score').text(localStorage.getItem('total'));
@@ -80,8 +92,8 @@ $('.col').on('click', (event)=>{
     })
 
     $('#clear-score').on('click', ()=>{
-      localStorage.setItem('total', 0)
-      $('#score').text(localStorage.getItem('total'))
+      localStorage.clear()
+      setItems()
     })
 
   

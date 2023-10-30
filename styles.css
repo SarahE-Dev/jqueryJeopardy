@@ -20,6 +20,8 @@
 
 .active {
     pointer-events: none;
+    background-color: blue;
+    color: red;
 }
 
 #gameBoard {
@@ -62,6 +64,7 @@
     background-color: blue;
     height: 31rem;
 }
+
 
 
 
